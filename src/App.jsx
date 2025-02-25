@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Box } from '@chakra-ui/react';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
@@ -6,6 +6,12 @@ import NewItinerary from './pages/NewItinerary';
 import Chat from './pages/Chat';
 import Profile from './pages/Profile';
 import ItineraryDetails from './pages/ItineraryDetails';
+import { useAuth } from './context/AuthContext';
+
+function PrivateRoute({ children }) {
+  const { isLoggedIn } = useAuth();
+  return isLoggedIn ? children : <Navigate to="/" />;
+}
 
 function App() {
   return (
@@ -17,7 +23,14 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/new" element={<NewItinerary />} />
             <Route path="/chat" element={<Chat />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route
+              path="/profile"
+              element={
+                <PrivateRoute>
+                  <Profile />
+                </PrivateRoute>
+              }
+            />
             <Route path="/itinerary/:id" element={<ItineraryDetails />} />
           </Routes>
         </Box>

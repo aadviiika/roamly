@@ -1,11 +1,23 @@
 import { Box, Flex, Button, useColorMode, useColorModeValue, IconButton, Stack, HStack } from '@chakra-ui/react';
 import { MoonIcon, SunIcon } from '@chakra-ui/icons';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
   const { colorMode, toggleColorMode } = useColorMode();
+  const { isLoggedIn, login, logout } = useAuth();
+  const navigate = useNavigate();
   const bgColor = useColorModeValue('white', 'gray.800');
   const borderColor = useColorModeValue('gray.200', 'gray.700');
+
+  const handleAuthClick = () => {
+    if (isLoggedIn) {
+      logout();
+      navigate('/');
+    } else {
+      login();
+    }
+  };
 
   return (
     <Box
@@ -21,13 +33,13 @@ export default function Navbar() {
       <Flex h={16} alignItems="center" justifyContent="space-between" maxW="1200px" mx="auto">
         <HStack spacing={8} alignItems="center">
           <Box fontSize="2xl" fontWeight="bold" color="teal.500">
-            Roamly
+            <Link to="/">Roamly</Link>
           </Box>
           <HStack as="nav" spacing={4} display={{ base: 'none', md: 'flex' }}>
             <Link to="/"><Button variant="ghost">Home</Button></Link>
             <Link to="/new"><Button variant="ghost">New</Button></Link>
             <Link to="/chat"><Button variant="ghost">Chat</Button></Link>
-            <Link to="/profile"><Button variant="ghost">Profile</Button></Link>
+            {isLoggedIn && <Link to="/profile"><Button variant="ghost">Profile</Button></Link>}
           </HStack>
         </HStack>
 
@@ -38,7 +50,9 @@ export default function Navbar() {
             variant="ghost"
             aria-label="Toggle color mode"
           />
-          <Button colorScheme="teal">Log Out</Button>
+          <Button colorScheme="teal" onClick={handleAuthClick}>
+            {isLoggedIn ? 'Log Out' : 'Login'}
+          </Button>
         </Stack>
       </Flex>
     </Box>
